@@ -1,32 +1,39 @@
 'use strict';
 
 function printReceipt(inputs) {
-  //console.log('Implement the exercise requirements here and rewrite the line of code.');
-  var itemDetailList = decodeItem(inputs);
-  var itemDetailWithTotalList = generateReceipt(itemDetailList);
+  let itemDetailList = decodeItem(inputs);
+  let itemDetailWithTotalList = generateReceipt(itemDetailList);
   renderReceipt(itemDetailWithTotalList);
 }
 
 function decodeItem(inputs) {
-  var itemQuantityList = countItem(inputs);
-  var itemDetailList = getItemDetail(itemQuantityList);
+  let itemQuantityList = countItem(inputs);
+  let itemDetailList = getItemDetail(itemQuantityList);
   return itemDetailList;
 }
 
 function generateReceipt(itemDetailList) {
-  var itemDetailWithSubtotalList = calculateItemPrice(itemDetailList);
-  var itemDetailWithTotalList = calculateTotalPrice(itemDetailWithSubtotalList);
+  let itemDetailWithSubtotalList = calculateItemPrice(itemDetailList);
+  let itemDetailWithTotalList = calculateTotalPrice(itemDetailWithSubtotalList);
   return itemDetailWithTotalList;
 }
 
-function renderReceipt(inputs) {
-
+function renderReceipt(itemDetailWithTotalList) {
+  let receipt = `***<store earning no money>Receipt ***\n`;
+  itemDetailWithTotalList.forEach(item => {
+    receipt += `Name：${item.name}，Quantity：${item.quantity} ${item.unit}${item.quantity === 1 ? '' : 's'}，Unit：${item.price} (yuan)，Subtotal：${item.subtotal} (yuan)\n`; 
+  })
+  receipt += `----------------------\n`+
+  `总计：${itemDetailWithTotalList.total} (yuan)\n`+
+`**********************`
+console.log(receipt);
+  return receipt;
 }
 
 function countItem(inputs) {
-  var itemQuantityList = [];
-  var key = inputs[0];
-  var qty = 0;
+  let itemQuantityList = [];
+  let key = inputs[0];
+  let qty = 0;
 
 
   inputs.forEach(element => {
@@ -48,34 +55,34 @@ function countItem(inputs) {
 
 
 function getItemDetail(itemQuantityList) {
-  var allItemList = loadAllItems();
+  let allItemList = loadAllItems();
 
   Object.keys(itemQuantityList).forEach(key => {
     Object.keys(allItemList).forEach(index => {
       if (itemQuantityList[key].barcode == allItemList[index].barcode) {
         itemQuantityList[key].name = allItemList[index].name;
         itemQuantityList[key].unit =  allItemList[index].unit;
-        itemQuantityList[key].price = allItemList[index].price;
+        itemQuantityList[key].price = allItemList[index].price.toFixed(2);
       }
     });
   });
-
   return itemQuantityList;
 }
 
 function calculateItemPrice(itemDetailList) {
     Object.keys(itemDetailList).forEach(index => {
-      itemDetailList[index].subtotal = itemDetailList[index].price * itemDetailList[index].quantity;
+      itemDetailList[index].subtotal = (itemDetailList[index].price * itemDetailList[index].quantity).toFixed(2);
   });
   return itemDetailList
 }
 
 function calculateTotalPrice(itemDetailWithSubtotalList) {
-  var total = 0;
+  let total = 0;
   Object.keys(itemDetailWithSubtotalList).forEach(index => {
-    total += itemDetailWithSubtotalList[index].subtotal;
+    total += parseInt(itemDetailWithSubtotalList[index].subtotal);
   });
-  itemDetailWithSubtotalList.total = total
+  itemDetailWithSubtotalList.total = total.toFixed(2);
+
   return itemDetailWithSubtotalList;
 }
 
