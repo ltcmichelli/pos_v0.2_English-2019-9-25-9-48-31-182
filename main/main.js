@@ -4,16 +4,23 @@ function printReceipt(inputs) {
   //console.log('Implement the exercise requirements here and rewrite the line of code.');
   var itemDetailList = decodeItem(inputs);
   var itemDetailWithTotalList = generateReceipt(itemDetailList);
+  renderReceipt(itemDetailWithTotalList);
 }
 
 function decodeItem(inputs) {
   var itemQuantityList = countItem(inputs);
   var itemDetailList = getItemDetail(itemQuantityList);
-  console.log(itemDetailList)
   return itemDetailList;
 }
 
 function generateReceipt(itemDetailList) {
+  var itemDetailWithSubtotalList = calculateItemPrice(itemDetailList);
+  var itemDetailWithTotalList = calculateTotalPrice(itemDetailWithSubtotalList);
+  return itemDetailWithTotalList;
+}
+
+function renderReceipt(inputs) {
+
 }
 
 function countItem(inputs) {
@@ -41,34 +48,34 @@ function countItem(inputs) {
 
 
 function getItemDetail(itemQuantityList) {
-  var itemDetailList = [];
   var allItemList = loadAllItems();
 
   Object.keys(itemQuantityList).forEach(key => {
     Object.keys(allItemList).forEach(index => {
       if (itemQuantityList[key].barcode == allItemList[index].barcode) {
-        itemDetailList.push({
-          barcode: itemQuantityList[key].barcode,
-          name: allItemList[index].name,
-          unit: allItemList[index].unit,
-          price: allItemList[index].price,
-          quantity: itemQuantityList[key].quantity
-        });
+        itemQuantityList[key].name = allItemList[index].name;
+        itemQuantityList[key].unit =  allItemList[index].unit;
+        itemQuantityList[key].price = allItemList[index].price;
       }
     });
   });
 
-  return itemDetailList;
+  return itemQuantityList;
 }
 
 function calculateItemPrice(itemDetailList) {
+    Object.keys(itemDetailList).forEach(index => {
+      itemDetailList[index].subtotal = itemDetailList[index].price * itemDetailList[index].quantity;
+  });
+  return itemDetailList
 }
 
-function calculateTotalPrice(inputs) {
-  var itemDetailWithTotalList = [];
-
+function calculateTotalPrice(itemDetailWithSubtotalList) {
+  var total = 0;
+  Object.keys(itemDetailWithSubtotalList).forEach(index => {
+    total += itemDetailWithSubtotalList[index].subtotal;
+  });
+  itemDetailWithSubtotalList.total = total
+  return itemDetailWithSubtotalList;
 }
 
-function renderReceipt(inputs) {
-
-}
